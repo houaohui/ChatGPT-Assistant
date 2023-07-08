@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.10) 
+
+# 设定工程名和版本号 
+project(chat VERSION 1.0) 
+
+# specify the C++ standard 
+# set(CMAKE_CXX_STANDARD 11) 
+# set(CMAKE_CXX_STANDARD_REQUIRED True) 
+
+# 链接 curl库
+link_directories(C:/package/curl-7.88.1_2-win64-mingw/lib)
+include_directories(C:/package/curl-7.88.1_2-win64-mingw/include)
+link_libraries(curl)
+# 链接 paho mqtt
+link_directories(./paho-mqtt-c-win64-1.3.12/lib)
+include_directories(./paho-mqtt-c-win64-1.3.12/include)
+link_libraries(paho-mqtt3c)
+
+# 链接 pocketsphinx
+link_directories(./pocketsphinx/lib)
+include_directories(./pocketsphinx/include)
+include_directories(./pocketsphinx/examples/include)
+link_libraries(pocketsphinx)
+
+add_subdirectory(tts)
+add_subdirectory(json)
+add_subdirectory(asr)
+add_subdirectory(src)
+add_subdirectory(audiorecorder)
+add_subdirectory(mqtt-client)
+

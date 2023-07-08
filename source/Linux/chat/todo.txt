@@ -1,0 +1,8 @@
+1，获得assess token
+2，录音录入，调用api
+3，加入MQTT库
+
+export AUDIODEV=hw:0,0
+export AUDIODRIVER=alsa
+export POCKETSPHINX_PATH="$(pwd)/model"
+expoet LD_LIBRARY_PATH="LD_LIBRARY_PATH:$(pwd)"

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libasr.a  CMakeFiles/asr.dir/asr.cpp.o CMakeFiles/asr.dir/common.cpp.o
+/usr/bin/ranlib libasr.a

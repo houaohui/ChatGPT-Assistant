@@ -1,0 +1,49 @@
+1，windows 编译openssl时无法打开包括文件: “limits.h”: No such file or directory
+>是因为直接使用nmake编译工具时没有办法引入相关的环境变量，需要打开vscode里面的命令行提示符，然后在里面编译就行了
+2，编译时，会出现一些libcrypto-shlib-aes_cfb.obj : fatal error LNK1112: 模块计算机类型“x64”
+与目标计算机类型“x86”冲突等信息，以及nmake install时候出现一些无法解析的外部符号，等错误
+>因为没有指定编译目标位宽或者多次尝试编译生成的文件混乱，需要执行nmake clean清除一下，
+然后重新以管理员权限重新打开vs studio内置的cmd，要不然创建安装文件夹没有权限，再加载一下vcvars32.bat，
+指定编译目标为32位，就可以正常编译安装32位的安装文件
+
+3，编译paho时已经指定安装好的openssl的位置，指定BUILD_WITH_SSL，但是还是会报错： undefined reference to `SSL_get1_session'
+ undefined reference to `SSL_SESSION_free'
+undefined reference to `SSL_set_session'
+...等一堆ssl相关的错误
+>
+4，使用cmake命令行编译时没有BUILD_WITH_SSL选项时会
+出现错误 sys/socket.h: No such file or directory 30 |   #include <sys/socket.h>
+>
+5，使用cmakegui编译，指定BUILD_WITH_SSL会出现undefined reference to `BCryptGenRandom
+>
+>以上原因认为是不适合在windows平台直接编译，需要在linux平台交叉编译windows目标，或者还有其他原因
+
+ from asr-tts-client (d0, q1, r0, m3, 'test/question', ... (21 bytes))
+Sending PUBACK to asr-tts-client (m3, rc0)
+ from man (d0, q0, r0, m0, '/test/question', ... (6 bytes))
+Sending PUBLISH to chat-gpt (d0, q0, r0, m0, '/test/question'
+>因为订阅和发布的主题消息等级不一样
+>是否要考虑集成为一个应用
+
+交叉编译openssl出现 -m64错误
+>具体原因是没有给定os/compile，所以默认会添加-m64编译选项，我们是32位系统，而且编译器基本不认-m64选项，可以运行一下./Configure看一下输出，根据自己的需要选择对应的os/compiler，其他平台的比如arm，android等平台选择合适的参数。
+cmake -B . -S ../../  -DPAHO_WITH_SSL=TRUE -OPENSSL_ROOT_DIR="C:/Program Files (x86)/OpenSSL"
+
+
+undefined reference to fcntl@GLIBC2.28
+是因为我使用cmake 构建的和其他库文件构建的不一样吗
+再检查一下cmake的配置
+如果没有/etc/inittab文件，则可以尝试使用systemd启用自动登录功能。请按照以下步骤执行：
+
+
+运行以下命令启用getty自动登录服务:
+systemctl edit getty@tty1.service
+输入以下内容并保存更改：
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
+运行以下命令重新加载systemd配置：
+systemctl daemon-reload
+运行以下命令重新启动getty服务：
+systemctl restart getty@tty1.service
+重新启动你的设备，它应该现在会自动登录到指定的用户。

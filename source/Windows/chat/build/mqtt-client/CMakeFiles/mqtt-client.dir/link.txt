@@ -1,0 +1,2 @@
+D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc libmqtt-client.a "CMakeFiles/mqtt-client.dir/mqtt-client.cpp.obj"
+D:\w64devkit-1.18.0\w64devkit\bin\ranlib.exe libmqtt-client.a

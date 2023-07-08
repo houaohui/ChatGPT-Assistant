@@ -1,0 +1,1 @@
+cmd_/root/st7789/normal/st7789.ko := ld -r  -EL  --build-id  -T ./scripts/module-common.lds -T ./arch/arm/kernel/module.lds -o /root/st7789/normal/st7789.ko /root/st7789/normal/st7789.o /root/st7789/normal/st7789.mod.o;  true

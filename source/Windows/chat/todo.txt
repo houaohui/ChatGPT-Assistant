@@ -1,0 +1,4 @@
+1，获得assess token
+2，录音录入，调用api
+3，加入MQTT库
+4，

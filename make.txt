@@ -1,0 +1,42 @@
+# openssl
+./Configure --prefix=$(pwd)/build/install --openssldir=$(pwd)/build/install/ssl --cross-compile-prefix=arm-linux-gnueabihf- no-asm linux-generic32
+make
+make install
+
+# pocketsphinx 
+在主文件夹里CmakeLists.txt添加
+set(CMAKE_C_COMPILER "/usr/bin/arm-linux-gnueabihf-gcc")
+cmake -S . -B build
+cd build make
+拷贝libpocketsphinx.a库文件到chat
+
+# zlib
+CC=arm-linux-gnueabihf-gcc
+LD=arm-linux-gnueabihf-ld
+AD=arm-linux-gnueabihf-as
+./configure --prefix=$(pwd)/build/install   
+make
+make install
+
+# curl 依赖openssl zlib
+LDFLAGS=-L/usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib
+CFLAGS=-I/usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/lib
+./configure --host=arm-linux-gnueabihf --with-ssl=/home/hah/Downloads/openssl-3.1.0/build/install  --with-zlib=/home/hah/Downloads/zlib-1.2.11/build/install --enable-shared  --enable-static --prefix=$(pwd)/build/install CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CFLAGS=-I/usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include LDFLAGS=-L/usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/lib --without-zstd --enable-static --enable-zlib
+
+make
+make install
+
+#paho-mqtt 依赖openssl
+mkdir build && cd build
+cmake -S .. -B . -DPAHO_WITH_SSL=TRUE -DOPENSSL_ROOT_DIR=/home/hah/Downloads/openssl-3.1.0/build/install -DCMAKE_INSTALL_PREFIX=$(pwd)/build/install -DPAHO_BUILD_STATIC=TRUE -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc
+
+
+# freetype
+./configure --prefix=$(pwd)/build/install --host=arm-linux-gnueabihf --with-zlib=yes --with-bzip2=no --with-png=no --with-harfbuzz=no CFLAGS=-I/home/hah/Downloads/zlib-1.2.11/build/install/include LDFLAGS=-L/home/hah/Downloads/zlib-1.2.11/build/install/lib
+
+make
+make install
+
+
+
+

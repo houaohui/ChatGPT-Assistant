@@ -1,0 +1,14 @@
+prefix=/home/hah/Downloads/freetype-2.8/build/install
+exec_prefix=/home/hah/Downloads/freetype-2.8/build/install
+libdir=/home/hah/Downloads/freetype-2.8/build/install/lib
+includedir=/home/hah/Downloads/freetype-2.8/build/install/include
+
+Name: FreeType 2
+URL: http://freetype.org
+Description: A free, high-quality, and portable font engine.
+Version: 20.0.14
+Requires:
+Requires.private: zlib
+Libs: -L${libdir} -lfreetype
+Libs.private: 
+Cflags: -I${includedir}/freetype2

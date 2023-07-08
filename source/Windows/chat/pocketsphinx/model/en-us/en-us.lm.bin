@@ -1,0 +1,37 @@
+Language model created by QuickLM on Wed May 24 00:36:08 EDT 2023
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 3 sentences and 5 words
+
+\data\
+ngram 1=5
+ngram 2=6
+ngram 3=3
+
+\1-grams:
+-0.7782 </s> -0.3010
+-0.7782 <s> -0.2218
+-1.2553 CHELSEA -0.2218
+-1.2553 KONW -0.2218
+-1.2553 PICO -0.2218
+
+\2-grams:
+-0.7782 <s> CHELSEA 0.0000
+-0.7782 <s> KONW 0.0000
+-0.7782 <s> PICO 0.0000
+-0.3010 CHELSEA </s> -0.3010
+-0.3010 KONW </s> -0.3010
+-0.3010 PICO </s> -0.3010
+
+\3-grams:
+-0.3010 <s> CHELSEA </s>
+-0.3010 <s> KONW </s>
+-0.3010 <s> PICO </s>
+
+\end\

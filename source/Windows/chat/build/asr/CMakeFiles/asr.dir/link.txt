@@ -1,0 +1,2 @@
+D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc libasr.a CMakeFiles/asr.dir/asr.cpp.obj CMakeFiles/asr.dir/common.cpp.obj
+D:\w64devkit-1.18.0\w64devkit\bin\ranlib.exe libasr.a
