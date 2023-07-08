@@ -1,2 +1,0 @@
-D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc libjson.a CMakeFiles/json.dir/jsoncpp.cpp.obj
-D:\w64devkit-1.18.0\w64devkit\bin\ranlib.exe libjson.a

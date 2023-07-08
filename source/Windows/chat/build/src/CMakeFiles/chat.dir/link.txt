@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\chat.dir/objects.a
-D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc CMakeFiles\chat.dir/objects.a @CMakeFiles\chat.dir\objects1
-D:\w64devkit-1.18.0\w64devkit\bin\c++.exe -Wl,--whole-archive CMakeFiles\chat.dir/objects.a -Wl,--no-whole-archive -o chat.exe -Wl,--out-implib,libchat.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\chat.dir\linkLibs.rsp

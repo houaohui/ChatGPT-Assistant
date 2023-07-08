@@ -1,2 +1,0 @@
-D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc libtts.a CMakeFiles/tts.dir/tts_common.cpp.obj CMakeFiles/tts.dir/tts.cpp.obj
-D:\w64devkit-1.18.0\w64devkit\bin\ranlib.exe libtts.a

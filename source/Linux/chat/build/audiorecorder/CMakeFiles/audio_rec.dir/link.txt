@@ -1,2 +1,0 @@
-/usr/bin/ar qc libaudio_rec.a  CMakeFiles/audio_rec.dir/audio_rec.cpp.o
-/usr/bin/ranlib libaudio_rec.a

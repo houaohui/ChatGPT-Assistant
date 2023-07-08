@@ -1,2 +1,0 @@
-D:\w64devkit-1.18.0\w64devkit\bin\ar.exe qc libaudio_rec.a CMakeFiles/audio_rec.dir/audio_rec.cpp.obj
-D:\w64devkit-1.18.0\w64devkit\bin\ranlib.exe libaudio_rec.a
