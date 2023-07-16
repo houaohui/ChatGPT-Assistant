@@ -10,7 +10,7 @@
 #include "../mqtt-client/mqtt-client.h"
 
 int OL_WKUP::awake = 0;
-Time OL_WKUP::timer_2;
+Timer OL_WKUP::timer_2;
 
 extern MQTTCLIENT *mqttClient;
 

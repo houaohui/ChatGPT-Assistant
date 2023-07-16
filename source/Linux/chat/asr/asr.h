@@ -37,11 +37,11 @@ public:
     /* 最终需要的assess token */
     string accessToken;
 
-        /* 填写网页上申请的appkey 如 g_api_key="g8eBUMSokVdB1BHGmgxxxxxx" */
-    const string api_key = "TCAeRVjcQVCOeE5V0IM5pfiw";
+        /* 填写网页上申请的appkey 如 g_api_key="g8eBUMSokVB1BHGmgxxxxxx" */
+    const string api_key = "你的api-key";
 
-    /* 填写网页上申请的APP SECRET 如 $secretKey="94dc9956e6550d87f8fa8ece112xxxxx" */
-    const string secret_key = "iDVRr7e0Lo4o5ssXOD6lGRdYxE7pYOty2";
+    /* 填写网页上申请的APP SECRET 如 $secretKey="94dc99566550d87f8fa8ece112xxxxx" */
+    const string secret_key = "iDVRr7e0Lo4o5ssXOD6lGRYxE7pYOty2";
 
     /* 获取token的接口*/
     const string token_org = "http://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id="+api_key+"&client_secret="+secret_key;

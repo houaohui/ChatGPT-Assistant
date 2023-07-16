@@ -68,7 +68,7 @@ def onenet_ctrl(prompt):
 
     headers = {
         "content-type":"application/json",
-        "api-key" : "Y=pQ3CNlDjsr0xrndt4zdtAiqsYc="
+        "api-key" : "你的api-key"
     }
 
     response = requests.request("GET", url, headers=headers)
@@ -87,7 +87,7 @@ def onenet_ctrl(prompt):
 
         headers = {
             "content-type":"application/json",
-            "api-key" : "Y=pQ3CNlDjsr0xndt4zdtAiqsYc="
+            "api-key" : "你的api-key"
         }
 
         response = requests.request(

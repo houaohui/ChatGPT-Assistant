@@ -8,11 +8,11 @@ import sys
 topic_A = "/test/answer"
 topic_Q = "/test/question"
 
-proxy = "127.0.0.1:10808"
-proxies = {
-  'http': f'socks5://{proxy}',
-  'https': f'socks5://{proxy}',
-}
+#proxy = "127.0.0.1:10808"
+#proxies = {
+#  'http': f'socks5://{proxy}',
+#  'https': f'socks5://{proxy}',
+#}
 
 messages=[{"role": "system", "content": "你是一个有用的助手"}]
 
@@ -101,19 +101,19 @@ def chatWithAi(prompt):
 
 
     headers = {
-        'Authorization': 'Bearer sk-floAGbA8Drtebp44n2dtT34BlbkFJN1EtvQykfMr7ClcIa40R',
+        'Authorization': 'Bearer 你的api-key',
         'Content-Type': 'application/json'
     }
 
     response = requests.request(
-        "POST", url, headers=headers, json=data, allow_redirects=False,proxies=proxies)
+        "POST", url, headers=headers, json=data, allow_redirects=False)
     json_data = response.json()
 
 
     
     # 格式化打印
     formatted_data = json.dumps(json_data, indent=4)
-    # print(formatted_data)
+    print(formatted_data)
 
 
     
@@ -146,14 +146,14 @@ if __name__ == "__main__":
     # 订阅问题
     subscribe(client, topic_Q)
     while (True):
-        input_str = input("you: ")
-        if str == 'q':
-            break
-        messages.append({"role": "user", "content":input_str})
-        text = chatWithAi(messages)
-        text = text.replace("\n","")
-        print("AI: " + text)
-        messages.append({"role": "assistant", "content":text})
+        #input_str = input("you: ")
+        #if str == 'q':
+        #    break
+        #messages.append({"role": "user", "content":input_str})
+        #text = chatWithAi(messages)
+        #text = text.replace("\n","")
+        #print("AI: " + text)
+        #messages.append({"role": "assistant", "content":text})
         # print(messages)
 
         time.sleep(1)

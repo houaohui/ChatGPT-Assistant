@@ -1,5 +1,5 @@
 
-add_executable(chat offline_wkup.cpp time.cpp main.cpp) 
+add_executable(chat offline_wkup.cpp timer.cpp main.cpp) 
 
 
 

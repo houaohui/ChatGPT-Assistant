@@ -2,7 +2,7 @@
 #define OFFLINE_WKUP
 
 #include "pocketsphinx.h"
-#include "time.h"
+#include "timer.h"
 
 #define frame_volume_size 30
 #define volume_ok 2500
@@ -24,9 +24,9 @@ public:
     short *frame;
     size_t frame_size;
 
-    Time timer;
-    static Time timer_2;
-    Time timer_3;
+    Timer timer;
+    static Timer timer_2;
+    Timer timer_3;
 };
 
 

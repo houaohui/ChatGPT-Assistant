@@ -101,7 +101,7 @@ def chatWithAi(prompt):
 
 
     headers = {
-        # 'Authorization': 'Bearer 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',
+        'Authorization': 'Bearer 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',
         'Content-Type': 'application/json'
     }
 

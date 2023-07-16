@@ -46,7 +46,7 @@ static int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_mes
 }
 
 MQTTCLIENT *mqttClient = new MQTTCLIENT();
-Time wait_ai_timer;
+Timer wait_ai_timer;
 
 
 int main(int argc, char **argv)

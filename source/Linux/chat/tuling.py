@@ -81,7 +81,7 @@ def chatWithAi(prompt):
             # },
         },
         "userInfo": {
-            "apiKey": "bcced6c3eae34dcb8315601612284c78",
+            "apiKey": "你的api-key",
             "userId": "00010001",
         },
 
