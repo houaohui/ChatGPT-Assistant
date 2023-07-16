@@ -4,7 +4,7 @@ Orangepi zero平台，基于ChatGPT的语音助手
 3，可控制联网设备（不成熟）
 4，实时显示对话文字（不稳定）
 
-#安装py库：（部分库没有验证安装名称，写此文档时凭记忆，建议确认好名称安装）
+#安装py库：（部分库没有验证安装名称，写此文档时凭记忆，可根据.py文件里面的库安装）
 pip3 install openai （好像没用到）
 pip3 install request  (不一定对)
 pip3 install pahomqtt
@@ -12,6 +12,9 @@ pip3 install pahomqtt
 
 #mqtt服务器
 sudo apt install mosquitto
+
+#音频处理工具
+sudo apt install sox
 
 #开机加载驱动模块
 vi /etc/rc.local
