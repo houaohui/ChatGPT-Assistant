@@ -10,15 +10,14 @@
 #include <iconv.h>
 #include <queue>
 #include <mutex>
+#include <sys/time.h>
+
 
 using namespace std;
 
-std::string ui_txt; 
-char ui_txt_flag = 0;
-std::wstring ui_wtxt;
 
-std::queue<std::wstring> message_queue;
-std::mutex message_mutex;
+std::deque<std::wstring> myQueue;
+std::mutex mtx;
 
 
 /**
@@ -31,6 +30,7 @@ static void catch_sig(int signum)
     (void)signum;
     global_done = 1;
 }
+
 /**
  * @brief MQTT回调函数
  * 
@@ -42,80 +42,103 @@ static void catch_sig(int signum)
  */
 static int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message)
 {
-
     printf("Message arrived\n");
     // printf("     topic: %s\n", topicName);
     // printf("   message: %.*s\n", message->payloadlen, (char*)message->payload);
-    ui_txt = (char *)message->payload;
-    ui_txt_flag = true;
-    
-    char *txt;
-    wchar_t *wtxt;
-    txt = (char *)(ui_txt+"\n").c_str();
-    // printf("%s",txt);
-    // for(int i =0 ; i< strlen(txt) ; i++) {
-    //     printf("\\x%02X",txt[i]);
-    // }
+    std::string ui_txt = (char *)message->payload;
 
+    // 将字符串连接并转换
+    std::string concatenatedStr = ui_txt + "\n";
 
-    size_t in_len = strlen(txt);
+    size_t in_len = concatenatedStr.length();
+
     size_t out_len = in_len * sizeof(wchar_t);
-    // printf("\nin_len=%d, out_len=%d\n",in_len, out_len);
-    wchar_t *out_str = (wchar_t *)calloc(out_len,1);
+
+    // 分配输出缓冲区的内存并初始化为零
+    wchar_t *out_str = (wchar_t *)calloc(out_len, 1);
 
     iconv_t cd = iconv_open("wchar_t","UTF-8");
     if(cd == (iconv_t)-1) {
         printf("iconv open failed !\n");
     }
 
-    //转化函数会改变指针，我们重新建一个变量
-    char * in_buf = txt;
+    //转化
+    std::wstring ui_wtxt;
+    char * in_buf = (char *)concatenatedStr.c_str();
     char *out_buf = (char *)out_str;
 
     if(iconv(cd, &in_buf, &in_len, &out_buf, &out_len) == (size_t)-1) {
-        printf("iconv failed !\n");
+        // 转化失败
+        printf("iconv failed!\n");
+        wchar_t buffer[50];
+        // 使用swprintf进行格式化
+        swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"iconv %d:%d\n", in_len, out_len);
+
+        ui_wtxt = buffer;
+    } else {
+        // 转化成功
+        ui_wtxt = out_str; 
     }
 
-    // printf("inbuf=%s, inlen=%d, outbuf=%ls, outlen=%d",txt,in_len,out_str,out_len);
-    ui_wtxt = out_str; 
-    // std::unique_lock<std::mutex> lock(message_mutex);
-    // message_queue.push(ui_wtxt);  //添加消息
-    txtViewer.printf(&txtViewer, (wchar_t *)ui_wtxt.c_str());
+    if (!ui_wtxt.empty())
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        myQueue.push_back(ui_wtxt);
+    }
 
+   
     // free(wtxt);
     iconv_close(cd);
     free(out_str);
 
-    
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
-    ui_txt_flag = false;
 
     return 1;
 }
 
-int nb_get_wchar(wchar_t &c)
-{
-    int result = -1;
-    struct termios old_tio, new_tio;
-    int old_flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-    if(tcgetattr(STDIN_FILENO, &old_tio) == 0) {
-        new_tio = old_tio;
-        new_tio.c_lflag &= ~(ICANON | ECHO);
-        if(tcsetattr(STDIN_FILENO, TCSANOW, &new_tio) == 0) {
-            fcntl(STDIN_FILENO, F_SETFL, old_flags | O_NONBLOCK);
-            wchar_t c1 = getwchar();
-            if(c1 != EOF) {
-                c = c1;
-                result = 0;
-            }
-            fcntl(STDIN_FILENO, F_SETFL, old_flags);
-            tcsetattr(STDIN_FILENO, TCSANOW, &old_tio);
+
+/**
+ * @brief 控制帧率刷新函数
+ * 
+ * @param frameRate 设定帧率
+ */
+void updateFrame(int frameRate) {
+    struct timeval currentTime, lastTime;
+    long long frameTimeMicros = 1000000 / frameRate;
+
+    gettimeofday(&lastTime, NULL);
+
+    do {
+        gettimeofday(&currentTime, NULL);
+
+        long long elapsedTimeMicros = (currentTime.tv_sec - lastTime.tv_sec) * 1000000 +
+            (currentTime.tv_usec - lastTime.tv_usec);
+
+        if (elapsedTimeMicros < frameTimeMicros) {
+            long long sleepTimeMicros = frameTimeMicros - elapsedTimeMicros;
+            usleep(sleepTimeMicros); // 睡眠以控制帧率
         }
+
+  
+        // 刷新屏幕
+        do{
+            std::lock_guard<std::mutex> lock(mtx);
+            if (!myQueue.empty()) {
+                std::wstring &new_wtxt = myQueue.back(); // 只读取队列的末尾数据
+                txtViewer.printf(&txtViewer, (wchar_t *)new_wtxt.c_str());
+                myQueue.pop_back();    // 只删除队列的末尾数据
+            }
+        } while(0);
+
+        // 解析
+        txtViewer.run(&txtViewer);
         
-    }
-    
-    return result;
+        freetype_fill_screen();
+        freetype_clean_screen();
+        gettimeofday(&lastTime, NULL);
+
+    } while(0);
 }
 
 int main(int argc, char **argv)
@@ -130,41 +153,20 @@ int main(int argc, char **argv)
     freetype_test_init();
     // freetype_test_draw();
     
-    
-
     txtViewer_init(&txtViewer,1024,0,0,CONSOLE_PRINT);
 
 
+    #define FRAME_RATE  (45)
+
     while(!global_done)
     {
-        
-        // wchar_t c;
-        // if(nb_get_wchar(c) != -1)
-        // {
-        //     txtViewer.input_updata = true;
-        //     txtViewer.getchar = c;
-        //     printf("wchar: %lc\n",c);
-        // }
-        while(ui_txt_flag == true)
-        {
-            // ui_txt_flag = false;
-            // std::unique_lock<std::mutex> lock(message_mutex);
-            // while(!message_queue.empty()) {
-            //     std::wstring ui_txt = message_queue.front();
-                // txtViewer.printf(&txtViewer, (wchar_t *)ui_wtxt.c_str());
-            //     message_queue.pop();
-            // }
-        }
-
-        txtViewer.run(&txtViewer);
-        
-        freetype_fill_screen();
-        freetype_clean_screen();
+        updateFrame(FRAME_RATE);
     }
+
 
     freetype_test_close();
     
-    free(mqttClient);
+    delete mqttClient;
     return 0;
 }
 

@@ -179,7 +179,7 @@ void txtViewer_init(txtViewer_t *viewer, int size, s16 win_x, s16 win_y, p_mode_
 	// txtViewer_printf(viewer,L"0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n");
 	// txtViewer_printf(viewer,L"he\rllo,th\ris is a test.\ncan you see something here?\nIf you can see some words\nThis test may have succeeded!\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n");
 	// txtViewer_printf(viewer,clang);
-	txtViewer_printf(viewer,L"你好，你能看到这些文字？如果可以清晰的看到，说明这个测试成功了！");
+	txtViewer_printf(viewer,L"你好，你能看到这些文字？如果可以清晰的看到，说明这个测试成功了！\n");
 	viewer->scroll_enable = false;
 }
 //输入一个字符
@@ -343,7 +343,7 @@ static u8 txtViewer_Dynamic_Aim_Speed(txtViewer_t *viewer,u8 line)
 	//速度最大为 (字符高度viewer->char_h-line+1) Pixels
 	if (line > viewer->char_h)
 		return 0;
-	return viewer->scroll_pixel<=line*viewer->char_h ? 1:1+txtViewer_Dynamic_Aim_Speed(viewer, line+1);
+	return viewer->scroll_pixel<=line*viewer->char_h ? 3:(viewer->char_h/8)+txtViewer_Dynamic_Aim_Speed(viewer, line+1);
 }
 //从第line行开始，根据剩余的行数成比例增加动画速度
 static u8 Dynamic_Aim_SpeedForWindow(txtViewer_t *viewer,u8 start_step, u8 step_size, s16 depend)
