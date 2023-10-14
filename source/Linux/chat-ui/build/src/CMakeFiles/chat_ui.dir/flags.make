@@ -7,11 +7,11 @@ C_FLAGS =
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/hah/Desktop/chat-ui/./paho-mqtt-c-1.3.12/include -I/home/hah/Desktop/chat-ui/freetype-2.8/include/freetype2 -I/home/hah/Desktop/chat-ui/src -I/home/hah/Desktop/chat-ui/mqtt-client -I/home/hah/Desktop/chat-ui/paho-mqtt-c-1.3.12/include 
+C_INCLUDES = -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/./paho-mqtt-c-1.3.12/include -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/freetype-2.8/include/freetype2 -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/paho-mqtt-c-1.3.12/include 
 
 CXX_FLAGS =   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/hah/Desktop/chat-ui/./paho-mqtt-c-1.3.12/include -I/home/hah/Desktop/chat-ui/freetype-2.8/include/freetype2 -I/home/hah/Desktop/chat-ui/src -I/home/hah/Desktop/chat-ui/mqtt-client -I/home/hah/Desktop/chat-ui/paho-mqtt-c-1.3.12/include 
+CXX_INCLUDES = -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/./paho-mqtt-c-1.3.12/include -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/freetype-2.8/include/freetype2 -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/paho-mqtt-c-1.3.12/include 
 

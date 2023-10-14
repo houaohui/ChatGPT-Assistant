@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hah/Desktop/chat-ui
+CMAKE_SOURCE_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hah/Desktop/chat-ui/build
+CMAKE_BINARY_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build
 
 # Include any dependencies generated for this target.
 include mqtt-client/CMakeFiles/mqtt-client.dir/depend.make
@@ -59,16 +59,16 @@ include mqtt-client/CMakeFiles/mqtt-client.dir/flags.make
 
 mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o: mqtt-client/CMakeFiles/mqtt-client.dir/flags.make
 mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o: ../mqtt-client/mqtt-client.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hah/Desktop/chat-ui/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o"
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o -c /home/hah/Desktop/chat-ui/mqtt-client/mqtt-client.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o"
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o -c /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client/mqtt-client.cpp
 
 mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i"
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hah/Desktop/chat-ui/mqtt-client/mqtt-client.cpp > CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client/mqtt-client.cpp > CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i
 
 mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s"
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hah/Desktop/chat-ui/mqtt-client/mqtt-client.cpp -o CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && /usr/local/arm/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client/mqtt-client.cpp -o CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s
 
 # Object files for target mqtt-client
 mqtt__client_OBJECTS = \
@@ -80,9 +80,9 @@ mqtt__client_EXTERNAL_OBJECTS =
 mqtt-client/libmqtt-client.a: mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o
 mqtt-client/libmqtt-client.a: mqtt-client/CMakeFiles/mqtt-client.dir/build.make
 mqtt-client/libmqtt-client.a: mqtt-client/CMakeFiles/mqtt-client.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hah/Desktop/chat-ui/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libmqtt-client.a"
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -P CMakeFiles/mqtt-client.dir/cmake_clean_target.cmake
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mqtt-client.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libmqtt-client.a"
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -P CMakeFiles/mqtt-client.dir/cmake_clean_target.cmake
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mqtt-client.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 mqtt-client/CMakeFiles/mqtt-client.dir/build: mqtt-client/libmqtt-client.a
@@ -90,10 +90,10 @@ mqtt-client/CMakeFiles/mqtt-client.dir/build: mqtt-client/libmqtt-client.a
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/build
 
 mqtt-client/CMakeFiles/mqtt-client.dir/clean:
-	cd /home/hah/Desktop/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -P CMakeFiles/mqtt-client.dir/cmake_clean.cmake
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client && $(CMAKE_COMMAND) -P CMakeFiles/mqtt-client.dir/cmake_clean.cmake
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/clean
 
 mqtt-client/CMakeFiles/mqtt-client.dir/depend:
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hah/Desktop/chat-ui /home/hah/Desktop/chat-ui/mqtt-client /home/hah/Desktop/chat-ui/build /home/hah/Desktop/chat-ui/build/mqtt-client /home/hah/Desktop/chat-ui/build/mqtt-client/CMakeFiles/mqtt-client.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client/CMakeFiles/mqtt-client.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/depend
 

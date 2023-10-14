@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/hah/Desktop/chat-ui/mqtt-client/mqtt-client.cpp" "/home/hah/Desktop/chat-ui/build/mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o"
+  "/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client/mqtt-client.cpp" "/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

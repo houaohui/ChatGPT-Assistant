@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hah/Desktop/chat-ui
+CMAKE_SOURCE_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hah/Desktop/chat-ui/build
+CMAKE_BINARY_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -113,14 +113,14 @@ src/clean: src/CMakeFiles/chat_ui.dir/clean
 src/CMakeFiles/chat_ui.dir/all: mqtt-client/CMakeFiles/mqtt-client.dir/all
 	$(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/depend
 	$(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hah/Desktop/chat-ui/build/CMakeFiles --progress-num=1,2,3,4 "Built target chat_ui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles --progress-num=1,2,3,4 "Built target chat_ui"
 .PHONY : src/CMakeFiles/chat_ui.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/chat_ui.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 6
 	$(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/chat_ui.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 0
 .PHONY : src/CMakeFiles/chat_ui.dir/rule
 
 # Convenience name for target.
@@ -140,14 +140,14 @@ src/CMakeFiles/chat_ui.dir/clean:
 mqtt-client/CMakeFiles/mqtt-client.dir/all:
 	$(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/depend
 	$(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hah/Desktop/chat-ui/build/CMakeFiles --progress-num=5,6 "Built target mqtt-client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles --progress-num=5,6 "Built target mqtt-client"
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/all
 
 # Build rule for subdir invocation for target.
 mqtt-client/CMakeFiles/mqtt-client.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 mqtt-client/CMakeFiles/mqtt-client.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 0
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/rule
 
 # Convenience name for target.

@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hah/Desktop/chat-ui
+CMAKE_SOURCE_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hah/Desktop/chat-ui/build
+CMAKE_BINARY_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,14 +80,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles /home/hah/Desktop/chat-ui/build/mqtt-client/CMakeFiles/progress.marks
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 0
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/mqtt-client/CMakeFiles/progress.marks
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/clean
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/preinstall
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/preinstall
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 mqtt-client/CMakeFiles/mqtt-client.dir/rule:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/CMakeFiles/mqtt-client.dir/rule
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 mqtt-client/CMakeFiles/mqtt-client.dir/rule
 .PHONY : mqtt-client/CMakeFiles/mqtt-client.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ mqtt-client: mqtt-client/CMakeFiles/mqtt-client.dir/rule
 
 # fast build rule for target.
 mqtt-client/fast:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/build
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/build
 .PHONY : mqtt-client/fast
 
 mqtt-client.o: mqtt-client.cpp.o
@@ -131,7 +131,7 @@ mqtt-client.o: mqtt-client.cpp.o
 
 # target to build an object file
 mqtt-client.cpp.o:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.o
 .PHONY : mqtt-client.cpp.o
 
 mqtt-client.i: mqtt-client.cpp.i
@@ -140,7 +140,7 @@ mqtt-client.i: mqtt-client.cpp.i
 
 # target to preprocess a source file
 mqtt-client.cpp.i:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.i
 .PHONY : mqtt-client.cpp.i
 
 mqtt-client.s: mqtt-client.cpp.s
@@ -149,7 +149,7 @@ mqtt-client.s: mqtt-client.cpp.s
 
 # target to generate assembly for a file
 mqtt-client.cpp.s:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f mqtt-client/CMakeFiles/mqtt-client.dir/build.make mqtt-client/CMakeFiles/mqtt-client.dir/mqtt-client.cpp.s
 .PHONY : mqtt-client.cpp.s
 
 # Help Target
@@ -175,6 +175,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

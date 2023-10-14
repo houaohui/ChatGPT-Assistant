@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/hah/Desktop/chat-ui/./paho-mqtt-c-1.3.12/include 
+CXX_INCLUDES = -I/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/./paho-mqtt-c-1.3.12/include 
 

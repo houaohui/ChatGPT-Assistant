@@ -117,7 +117,7 @@ static void txtViewer_drawOneChar(wchar_t* string, bool invert, s16 x, s16 y, s1
 {
     // wchar_t c = *string - 0x20;
     // mydraw_bitmap(x, y, smallFont[(byte)c], SMALLFONT_WIDTH, SMALLFONT_HEIGHT, invert, 0,start_x, start_y, boundary_h,boundary_w);
-	freetype_draw_one_char(&string[0],0x9900FF, x, y, win_start_x, win_start_y, win_end_x, win_end_y);
+	freetype_draw_one_char(&string[0],0xFFFFFF, x, y, win_start_x, win_start_y, win_end_x, win_end_y);
 }
 
 static void txtViewer_printOneChar(s16 x, s16 y, wchar_t *str, s16 win_start_x, s16 win_start_y, s16 win_end_x, s16 win_end_y)

@@ -1,4 +1,4 @@
-# Install script for directory: /home/hah/Desktop/chat-ui/mqtt-client
+# Install script for directory: /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/mqtt-client
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

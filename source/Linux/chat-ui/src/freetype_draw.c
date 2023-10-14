@@ -222,6 +222,14 @@ void freetype_test_close()
     close(fd);
 }
 
+void freetype_show_cpu_usage(float usage)
+{
+    wchar_t buffer[50];
+    // 使用swprintf进行格式化
+    swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%.1f%%", usage);
+    lcd_draw_character(180,240, buffer,0xFF4500);  // 橙红色
+}
+
 void freetype_fill_screen()
 {
     /* LCD 背景刷成黑色 */

@@ -1,4 +1,4 @@
-# Install script for directory: /home/hah/Desktop/chat-ui/src
+# Install script for directory: /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -19,7 +19,6 @@ using namespace std;
 std::deque<std::wstring> myQueue;
 std::mutex mtx;
 
-
 /**
  * @brief 退出
  * 
@@ -30,6 +29,61 @@ static void catch_sig(int signum)
     (void)signum;
     global_done = 1;
 }
+
+static float cpuUsage = 0;
+
+// cpu 使用统计线程
+void* getCpuUsage(void* arg) {
+    while (!global_done) {
+
+        FILE* file = fopen("/proc/stat", "r");
+        if (file == NULL) {
+            perror("Error opening /proc/stat");
+            exit(1);
+        }
+
+        char line[128];
+        unsigned long long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+        unsigned long long prev_idle, prev_total, total_diff, idle_diff;
+
+        while (fgets(line, sizeof(line), file)) {
+            if (sscanf(line, "cpu %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
+                &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice) == 10) {
+                prev_idle = idle;
+                prev_total = user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice;
+                break;
+            }
+        }
+        fclose(file);
+
+        // Do some work that you want to measure CPU usage for.
+        sleep(2);
+
+        // After the work is done, read /proc/stat again.
+        file = fopen("/proc/stat", "r");
+        if (file == NULL) {
+            perror("Error opening /proc/stat");
+            exit(1);
+        }
+
+        while (fgets(line, sizeof(line), file)) {
+            if (sscanf(line, "cpu %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
+                &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice) == 10) {
+                total_diff = user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice - prev_total;
+                idle_diff = idle - prev_idle;
+                double cpu_usage = 100.0 * (1.0 - (double)idle_diff / total_diff);
+                // printf("CPU Usage: %.2f%%\n", cpu_usage);
+                cpuUsage = cpu_usage;
+                break;
+            }
+        }
+        fclose(file);
+    }
+
+    return NULL;
+}
+
+
 
 /**
  * @brief MQTT回调函数
@@ -134,8 +188,10 @@ void updateFrame(int frameRate) {
         // 解析
         txtViewer.run(&txtViewer);
         
+        freetype_show_cpu_usage(cpuUsage);
         freetype_fill_screen();
         freetype_clean_screen();
+
         gettimeofday(&lastTime, NULL);
 
     } while(0);
@@ -155,6 +211,11 @@ int main(int argc, char **argv)
     
     txtViewer_init(&txtViewer,1024,0,0,CONSOLE_PRINT);
 
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, getCpuUsage, NULL) != 0) {
+        perror("Error creating thread");
+        return 1;
+    }
 
     #define FRAME_RATE  (45)
 

@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hah/Desktop/chat-ui
+CMAKE_SOURCE_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hah/Desktop/chat-ui/build
+CMAKE_BINARY_DIR = /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles /home/hah/Desktop/chat-ui/build/src/CMakeFiles/progress.marks
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/chat-ui/build/CMakeFiles 0
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/src/CMakeFiles/progress.marks
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/clean
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/CMakeFiles/chat_ui.dir/rule:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/chat_ui.dir/rule
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/chat_ui.dir/rule
 .PHONY : src/CMakeFiles/chat_ui.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ chat_ui: src/CMakeFiles/chat_ui.dir/rule
 
 # fast build rule for target.
 chat_ui/fast:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/build
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/build
 .PHONY : chat_ui/fast
 
 TXT_Viewer.o: TXT_Viewer.c.o
@@ -131,7 +131,7 @@ TXT_Viewer.o: TXT_Viewer.c.o
 
 # target to build an object file
 TXT_Viewer.c.o:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.o
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.o
 .PHONY : TXT_Viewer.c.o
 
 TXT_Viewer.i: TXT_Viewer.c.i
@@ -140,7 +140,7 @@ TXT_Viewer.i: TXT_Viewer.c.i
 
 # target to preprocess a source file
 TXT_Viewer.c.i:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.i
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.i
 .PHONY : TXT_Viewer.c.i
 
 TXT_Viewer.s: TXT_Viewer.c.s
@@ -149,7 +149,7 @@ TXT_Viewer.s: TXT_Viewer.c.s
 
 # target to generate assembly for a file
 TXT_Viewer.c.s:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.s
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.s
 .PHONY : TXT_Viewer.c.s
 
 freetype_draw.o: freetype_draw.c.o
@@ -158,7 +158,7 @@ freetype_draw.o: freetype_draw.c.o
 
 # target to build an object file
 freetype_draw.c.o:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.o
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.o
 .PHONY : freetype_draw.c.o
 
 freetype_draw.i: freetype_draw.c.i
@@ -167,7 +167,7 @@ freetype_draw.i: freetype_draw.c.i
 
 # target to preprocess a source file
 freetype_draw.c.i:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.i
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.i
 .PHONY : freetype_draw.c.i
 
 freetype_draw.s: freetype_draw.c.s
@@ -176,7 +176,7 @@ freetype_draw.s: freetype_draw.c.s
 
 # target to generate assembly for a file
 freetype_draw.c.s:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.s
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/freetype_draw.c.s
 .PHONY : freetype_draw.c.s
 
 main.o: main.cpp.o
@@ -185,7 +185,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.o
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -194,7 +194,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.i
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -203,7 +203,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /home/hah/Desktop/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.s
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(MAKE) -f src/CMakeFiles/chat_ui.dir/build.make src/CMakeFiles/chat_ui.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -235,6 +235,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/hah/Desktop/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
