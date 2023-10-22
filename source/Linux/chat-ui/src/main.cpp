@@ -215,7 +215,7 @@ int main(int argc, char **argv)
     if (pthread_create(&thread, NULL, getCpuUsage, NULL) != 0) {
         perror("Error creating thread");
         return 1;
-    }
+    }  
 
     #define FRAME_RATE  (45)
 
