@@ -8,8 +8,10 @@ src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.o: ../src/typedef.h
 
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../freetype-2.8/include/freetype2/freetype/config/ftheader.h
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../freetype-2.8/include/freetype2/ft2build.h
+src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../src/TXT_Viewer.h
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../src/freetype_draw.c
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../src/freetype_draw.h
+src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../src/src/uthash.h
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o: ../src/typedef.h
 
 src/CMakeFiles/chat_ui.dir/main.cpp.o: ../mqtt-client/mqtt-client.h

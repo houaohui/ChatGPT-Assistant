@@ -12,6 +12,28 @@
 freetype/config/ftheader.h
 -
 
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/TXT_Viewer.c
+TXT_Viewer.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/TXT_Viewer.h
+stdlib.h
+-
+typedef.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/typedef.h
+stdarg.h
+-
+freetype_draw.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.h
+
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/TXT_Viewer.h
+stdbool.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/stdbool.h
+string.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/string.h
+typedef.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/typedef.h
+wchar.h
+-
+
 /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.c
 freetype_draw.h
 /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.h
@@ -41,6 +63,10 @@ wchar.h
 -
 ft2build.h
 /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/ft2build.h
+TXT_Viewer.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/TXT_Viewer.h
+./src/uthash.h
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/src/uthash.h
 
 /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.h
 typedef.h
@@ -48,6 +74,18 @@ typedef.h
 math.h
 -
 wchar.h
+-
+
+/home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/src/uthash.h
+string.h
+-
+stddef.h
+-
+stdlib.h
+-
+stdint.h
+-
+stdio.h
 -
 
 /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/typedef.h

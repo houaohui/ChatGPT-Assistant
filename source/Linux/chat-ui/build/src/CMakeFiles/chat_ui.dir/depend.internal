@@ -9,8 +9,10 @@ src/CMakeFiles/chat_ui.dir/TXT_Viewer.c.o
 src/CMakeFiles/chat_ui.dir/freetype_draw.c.o
  ../freetype-2.8/include/freetype2/freetype/config/ftheader.h
  ../freetype-2.8/include/freetype2/ft2build.h
+ /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/TXT_Viewer.h
  /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.c
  /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/freetype_draw.h
+ /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/src/uthash.h
  /home/hah/Desktop/ChatGPT-Assistent/ChatGPT-Assistant/source/Linux/chat-ui/src/typedef.h
 src/CMakeFiles/chat_ui.dir/main.cpp.o
  ../mqtt-client/mqtt-client.h

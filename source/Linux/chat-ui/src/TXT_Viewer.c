@@ -74,8 +74,6 @@
  *           txtViewer.run(&txtViewer);
  */
  
- 
- 
 #include "TXT_Viewer.h"
 #include <stdlib.h>
 #include "typedef.h"
@@ -88,9 +86,59 @@
 //要过滤的字符,字符过滤是指显示过滤，实际上已经存储在内存里了
 static wchar_t * filter_buf = L"\r\t";
 //test buf
-wchar_t * clang = L"int main(int argc, wchar_t **argv)\n{\n\n    printf(\"hello world!\");\n    return 0;\n}\n";
+wchar_t * clang = L"int main(int argc, char **argv)\n{\n\n    printf(\"hello world!\");\n    return 0;\n}\n";
+
+#if SUPPORT_DIFFERENT_CHAR_W
+
+// 字符宽度表，包含所有ASCII字符
+int characterWidths[128] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // ASCII 0-15
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // ASCII 16-31
+// ' ', '!', '"', '#', '$', '%', '&', ''', '(', ')', '*', '+', ',', '-', '.', '/'
+    10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  // ASCII 32-47 
+// '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?'
+    10,  10,  10,  10,  11,  10,  10,  9,   10,  10,  10,  10,  10,  10,  10,  10,  // ASCII 48-63 (数字和符号)
+// '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'
+    10,  10,  10,  10,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  // ASCII 64-79
+// 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\', ']', '^', '_'
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  // ASCII 80-95
+// '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'
+    10,  10,  10,  10,  9,   9,   11,  10,  4,   7,   10,  9,   12,  10,  11,  10,  // ASCII 96-111 (小写字母和符号)
+// 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', 'DEL'
+    9,   10,  10,  10,  10,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0  // ASCII 112-127
+};
+
+// 用于判断是否是ASCII字符
+bool isASCII(wchar_t c) {
+    return (c >= 0x00 && c <= 0x7F);
+}
+
+// 获取字符宽度的函数
+int getCharWidth(txtViewer_t *viewer, wchar_t character) {
+#if SUPPORT_TABLE_WIDTH
+    int width = 0;
+	if (isASCII(character)) {
+		if (character >= 32 && character <= 127) {
+        	width = characterWidths[(int)character];
+    	}
+		 // 如果返回0, 是默认宽度
+    	return width == 0 ? viewer->char_w/2 : width;
+	} else {
+		return viewer->char_w;
+	}
+   
+#else // 认为英文是中文宽度的一半
+	if (isASCII(character)) {
+		return viewer->char_w/2;
+	} else {
+		return viewer->char_w;
+	}
+#endif
+}
 
 
+
+#endif
 
 millis8_t millis()
 {
@@ -108,8 +156,9 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer);
 static void txtViewer_console_print(txtViewer_t *viewer);
 
 
-static u16 getTotalLine(txtViewer_t *viewer, u8 col_cnt);
+static u16 getTotalLine_AutoBrk(txtViewer_t *viewer, u8 col_cnt);
 static void Recalculate_processed_cnt(txtViewer_t *viewer);
+static void Recalculate_processed_pixel(txtViewer_t *viewer);
 static void txtViewer_printf(txtViewer_t *viewer, wchar_t *fmt, ...);
 static void txtViewer_run(txtViewer_t *viewer);
 //包装画图库
@@ -117,7 +166,7 @@ static void txtViewer_drawOneChar(wchar_t* string, bool invert, s16 x, s16 y, s1
 {
     // wchar_t c = *string - 0x20;
     // mydraw_bitmap(x, y, smallFont[(byte)c], SMALLFONT_WIDTH, SMALLFONT_HEIGHT, invert, 0,start_x, start_y, boundary_h,boundary_w);
-	freetype_draw_one_char(&string[0],0xFFFFFF, x, y, win_start_x, win_start_y, win_end_x, win_end_y);
+	freetype_draw_one_char_cache(&string[0],0xFFFFFF, x, y, win_start_x, win_start_y, win_end_x, win_end_y);
 }
 
 static void txtViewer_printOneChar(s16 x, s16 y, wchar_t *str, s16 win_start_x, s16 win_start_y, s16 win_end_x, s16 win_end_y)
@@ -125,10 +174,12 @@ static void txtViewer_printOneChar(s16 x, s16 y, wchar_t *str, s16 win_start_x, 
 	txtViewer_drawOneChar(str, false, x, y, win_start_x, win_start_y, win_end_x, win_end_y);
 }
 //光标
-const byte Curosor_str[][7] = {{0xFF,0x00,0x00,0x00,0x00,0x00,0x00}};
+// const byte Curosor_str[][7] = {{0xFF,0x00,0x00,0x00,0x00,0x00,0x00}};
 static void txtViewer_printCursor(s16 x, s16 y, s16 start_x, s16 start_y, s16 boundary_h, s16 boundary_w)
 {
+	wchar_t cursor_str= L'_';
 	// mydraw_bitmap(x, y, Curosor_str[0], 7, SMALLFONT_HEIGHT, 0, 0,start_x, start_y, boundary_h,boundary_w);
+	freetype_draw_one_char(&cursor_str, 0xFFFFFF, x, y, start_x, start_y, boundary_h, boundary_w);
 }
 
 //静态字符缓冲区，由于使用malloc分配太大内存成功率不高，改为静态分配
@@ -162,8 +213,8 @@ void txtViewer_init(txtViewer_t *viewer, int size, s16 win_x, s16 win_y, p_mode_
 	viewer->scroll_anim = true;//开启动画
 	viewer->scroll_enable = false;//禁止窗口跟踪（NORMAL，AUTOBREAKLINE）或滚动(CONSOLE_PRINT)
 	viewer->keyboard_mode = true;//关闭键盘输入
-	viewer->filterOut_char = false;//关闭滤除'\r'字符
-	viewer->cursor_enable = false;//打开光标
+	viewer->filterOut_char = true;//滤除'\r'字符
+	viewer->cursor_enable = true;//打开光标
 	viewer->process_mode = p_mode;
 	viewer->input_updata = false;//输入更新
 	viewer->win_boundary = false;//绘制窗口
@@ -177,11 +228,13 @@ void txtViewer_init(txtViewer_t *viewer, int size, s16 win_x, s16 win_y, p_mode_
 		default:break;
 	}
 	// txtViewer_printf(viewer,L"0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n");
-	// txtViewer_printf(viewer,L"he\rllo,th\ris is a test.\ncan you see something here?\nIf you can see some words\nThis test may have succeeded!\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n");
-	// txtViewer_printf(viewer,clang);
-	txtViewer_printf(viewer,L"你好，你能看到这些文字？如果可以清晰的看到，说明这个测试成功了！\n");
+	// txtViewer_printf(viewer,L"0\n1\n2\n3\n");
+	txtViewer_printf(viewer,L"he\rllo,th\ris is a test.\ncan you see something here?\nIf you can see some words\nThis test may have succeeded!\n");
+	txtViewer_printf(viewer,clang);
+	// txtViewer_printf(viewer,L"你好，你能看到这些文字？如果可以清晰的看到，说明这个测试成功了！\n");
 	viewer->scroll_enable = false;
 }
+
 //输入一个字符
 void txtViewer_getChar(txtViewer_t *viewer,wchar_t data)
 {
@@ -206,6 +259,9 @@ void txtViewer_changeProcessMode(txtViewer_t *viewer, p_mode_t p_mode)
 	viewer->scroll_enable = false;
 	viewer->disp_cb.cursor_idx = viewer->disp_cb.store_charIdx;
 	Recalculate_processed_cnt(viewer);
+	#if SUPPORT_DIFFERENT_CHAR_W
+	Recalculate_processed_pixel(viewer);
+	#endif
 }
 
 void txtViewer_clearDataBuf(txtViewer_t *viewer)
@@ -218,6 +274,9 @@ void txtViewer_clearDataBuf(txtViewer_t *viewer)
 	viewer->disp_cb.cursor_idx = 0;
 	
 	Recalculate_processed_cnt(viewer);
+	#if SUPPORT_DIFFERENT_CHAR_W
+	Recalculate_processed_pixel(viewer);
+	#endif
 }
 
 static u8 is_filterChar(wchar_t chr, wchar_t *filter_buf)
@@ -234,6 +293,9 @@ void setFilterOut(txtViewer_t *viewer)
 {
 	viewer->filterOut_char = !viewer->filterOut_char;
 	Recalculate_processed_cnt(viewer);
+	#if SUPPORT_DIFFERENT_CHAR_W
+	Recalculate_processed_pixel(viewer);
+	#endif
 }
 
 //更换解析字符源
@@ -290,7 +352,7 @@ static void Recalculate_processed_cnt(txtViewer_t *viewer)
 {
 	u16 cnt = 0;
 	if(viewer->disp_cb.store_charIdx == viewer->disp_cb.start_charIdx) {
-		viewer->processd_cnt= 0;
+		viewer->processd_cnt = 0;
 		return;
 	}
 	//除去结束符
@@ -328,31 +390,41 @@ static void Recalculate_processed_cnt(txtViewer_t *viewer)
 		viewer->processd_cnt = cnt;
 }
 //设置窗口大小
-void txtViewer_setWindow(txtViewer_t *viewer, u8 h, u8 w )
+void txtViewer_setWindow(txtViewer_t *viewer, s16 h, s16 w )
 {
 	viewer->window_h = h;
 	viewer->window_w = w;
 	viewer->txt_ofsetX = 0;
 	viewer->txt_ofsetY = 0;
 	Recalculate_processed_cnt(viewer);
+	#if SUPPORT_DIFFERENT_CHAR_W
+	Recalculate_processed_pixel(viewer);
+	#endif
 }
 
 //从第line行开始，根据剩余的行数成比例增加动画速度
 static u8 txtViewer_Dynamic_Aim_Speed(txtViewer_t *viewer,u8 line)
 {
 	//速度最大为 (字符高度viewer->char_h-line+1) Pixels
-	if (line > viewer->char_h)
-		return 0;
-	return viewer->scroll_pixel<=line*viewer->char_h ? 3:(viewer->char_h/8)+txtViewer_Dynamic_Aim_Speed(viewer, line+1);
+	// if (line > viewer->char_h)
+	// 	return 0;
+	// return viewer->scroll_pixel<=line*viewer->char_h ? 3:(viewer->char_h/8)+txtViewer_Dynamic_Aim_Speed(viewer, line+1);
+	u8 set_speed = viewer->scroll_pixel / viewer->char_h;
+	// 加上基础速度
+	return set_speed + 3;
 }
 //从第line行开始，根据剩余的行数成比例增加动画速度
 static u8 Dynamic_Aim_SpeedForWindow(txtViewer_t *viewer,u8 start_step, u8 step_size, s16 depend)
 {
-	u8 max_speed = 16;//pixel
-	//速度最大为 (max_speed-line+1) Pixels
-	if (start_step > max_speed)
-		return 0;
-	return depend<=start_step*step_size ? 2:1+Dynamic_Aim_SpeedForWindow(viewer, start_step+1, step_size, depend);
+	// u8 max_speed = 16;//pixel
+	// //速度最大为 (max_speed-line+1) Pixels
+	// if (start_step > max_speed)
+	// 	return 0;
+	// return depend<=start_step*step_size ? 2:1+Dynamic_Aim_SpeedForWindow(viewer, start_step+1, step_size, depend);
+
+	u8 set_speed = depend / step_size;
+	// 加上基础速度
+	return set_speed + 3;
 }
 //删除最后一个存储位置的字符，当然取决于是否过滤的字符
 void txtViewer_DeleteLastStoreChar(txtViewer_t *viewer)
@@ -362,7 +434,6 @@ void txtViewer_DeleteLastStoreChar(txtViewer_t *viewer)
 	//除去结束符
 	u16 char_idx = getLast(viewer,viewer->disp_cb.store_charIdx);
 	
-				
 	//跳到非滤除字符的位置
 	if(viewer->filterOut_char)
 	{
@@ -376,8 +447,33 @@ void txtViewer_DeleteLastStoreChar(txtViewer_t *viewer)
 			char_idx = getLast(viewer, char_idx);
 		}
 	}
-	viewer->disp_cb.store_charIdx=char_idx;
+
+#if SUPPORT_DIFFERENT_CHAR_W
+	do {
+		// 重新计算processd_pixel
+		int delt_w = getCharWidth(viewer, viewer->data_buf[char_idx]);
+		if (viewer->processd_pixel == 0) {
+			viewer->processd_pixel = viewer->window_w - delt_w;
+		} else {
+			viewer->processd_pixel -= delt_w;
+		}
+	} while(0);
+#else
+	do {
+		// 重新计算processd_cnt
+		if (viewer->processd_cnt == 0) {
+			viewer->processd_cnt = viewer->window_w/viewer->char_w -1;
+		} else {
+			viewer->processd_cnt--;
+		}
+	} while(0);
+	
+#endif
+
+	viewer->disp_cb.store_charIdx = char_idx;
 	viewer->data_buf[viewer->disp_cb.store_charIdx]=L'\0';
+	//定位光标
+	viewer->disp_cb.cursor_idx = viewer->disp_cb.store_charIdx;
 }
 
 //光标指向位置删除字符
@@ -432,7 +528,7 @@ void txtViewer_CursorAddChar(txtViewer_t *viewer, wchar_t data)
 	if(getNext(viewer,viewer->disp_cb.store_charIdx) != viewer->disp_cb.start_charIdx) {
 		viewer->disp_cb.store_charIdx = getNext(viewer,viewer->disp_cb.store_charIdx);
 		viewer->data_buf[viewer->disp_cb.store_charIdx] = L'\0';
-	} 
+	}
 	else
 	{
 		//如果写满，且光标在最后一个位置，就不写了
@@ -748,6 +844,7 @@ void cursor_left(txtViewer_t *viewer)
 {
 	if(!viewer->cursor_enable)
 		return;
+	viewer->scroll_enable = true;
 	if(viewer->process_mode == CONSOLE_PRINT)
 		return;
 	if(viewer->disp_cb.cursor_idx == viewer->disp_cb.start_charIdx)
@@ -776,6 +873,7 @@ void cursor_right(txtViewer_t *viewer)
 {
 	if(!viewer->cursor_enable)
 		return;
+	viewer->scroll_enable = true;
 	if(viewer->process_mode == CONSOLE_PRINT)
 		return;
 	if(viewer->disp_cb.cursor_idx == viewer->disp_cb.store_charIdx)
@@ -807,7 +905,12 @@ static void txtViewer_addString(txtViewer_t *viewer, wchar_t *str)
 	u8 flag = 0;
 	u16 col_cnt = viewer->window_w/viewer->char_w;
 	while(*str != L'\0') {
-		
+
+// 传统打印记录字符的个数, 下面的函数计算process主要有两个目的
+// 1，用于定位窗口位置process_cnt是一个代表最后一行的字符个数的变量，可以知道当前的输入位置在什么地方
+// 2，用于产生CONSOLE_PRINT新行动画，通过计算process_cnt变量什么时侯大于窗口宽度，可以知道新行在什么时侯产生，并形成动画偏移
+// 3，现在要做的事情是通过什么手段代替这两个功能
+#if !SUPPORT_DIFFERENT_CHAR_W
 		//形成动画偏移
 		if(viewer->process_mode == CONSOLE_PRINT ) {
 			if(*str == L'\n') {
@@ -849,9 +952,7 @@ static void txtViewer_addString(txtViewer_t *viewer, wchar_t *str)
 				viewer->processd_cnt = 1;
 			}
 			
-		}
-		
-		if(viewer->process_mode == NORMAL ) {
+		} else if(viewer->process_mode == NORMAL ) {
 			if(*str == L'\n') {
 				ln_flag = 1;
 				if(viewer->keyboard_mode)
@@ -878,9 +979,7 @@ static void txtViewer_addString(txtViewer_t *viewer, wchar_t *str)
 			}
 
 			
-		}
-		
-		if(viewer->process_mode == AUTO_BREAKLINE ) {
+		} else if(viewer->process_mode == AUTO_BREAKLINE ) {
 			if(*str == L'\n') {
 				viewer->processd_cnt=0;
 			} else {
@@ -899,7 +998,51 @@ static void txtViewer_addString(txtViewer_t *viewer, wchar_t *str)
 			}
 			
 		}
+#endif
+
+// 通过计算最后一行的像素值，来计算新航动画的产生
+#if SUPPORT_DIFFERENT_CHAR_W
+		if(*str == L'\n') {
+			viewer->processd_pixel=0;
+			viewer->scroll_pixel += viewer->char_h;
+		} else {
+			int ok = 0;
+			//过滤字符
+			if(viewer->filterOut_char) {
+				if(!is_filterChar(*str,filter_buf)) {
+					ok = 1;
+				}
+			} else {
+				ok =1;
+			}
+			if (ok) {
+				int delt_w = getCharWidth(viewer, *str);
+				if (viewer->keyboard_mode) {
+					if(viewer->processd_pixel + delt_w == viewer->window_w) {
+						viewer->processd_pixel = 0;
+						viewer->scroll_pixel += viewer->char_h;
+					} else if (viewer->processd_pixel + delt_w > viewer->window_w) {
+						viewer->processd_pixel = delt_w;
+						viewer->scroll_pixel += viewer->char_h;
+					} else {
+						viewer->processd_pixel += delt_w;
+					}
+				} else {
+					if (viewer->processd_pixel + delt_w > viewer->window_w) {
+						viewer->processd_pixel = delt_w;
+						viewer->scroll_pixel += viewer->char_h;
+					} else {
+						viewer->processd_pixel += delt_w;
+					}
+				}
+			}
 		
+		}
+
+		
+
+
+#endif
 		
 		viewer->data_buf[viewer->disp_cb.store_charIdx] = *str++;
 		viewer->disp_cb.store_charIdx = getNext(viewer,viewer->disp_cb.store_charIdx);
@@ -913,6 +1056,9 @@ static void txtViewer_addString(txtViewer_t *viewer, wchar_t *str)
 		viewer->disp_cb.start_charIdx = findNewStartIdx(viewer);
 		//找到新行后需要重新计算processed_cnt
 		Recalculate_processed_cnt(viewer);
+		#if SUPPORT_DIFFERENT_CHAR_W
+		Recalculate_processed_pixel(viewer);
+		#endif
 	}
 	//定位光标
 	viewer->disp_cb.cursor_idx = viewer->disp_cb.store_charIdx;
@@ -927,7 +1073,7 @@ static void txtViewer_printf(txtViewer_t *viewer, wchar_t *fmt, ...)
 	vswprintf(firststr_buff,1024,fmt,ap);
 	va_end(ap);
 	txtViewer_addString(viewer, firststr_buff);
-	viewer->scroll_enable=1;//打开滚动更新或者窗口跟踪字符位置
+	viewer->scroll_enable = true;//打开滚动更新或者窗口跟踪字符位置
 	//非循环模式下全速打印，希望以后能规范执行速度
 	if(viewer->process_mode == CONSOLE_PRINT && !viewer->loop_show) {
 		while(viewer->scroll_pixel) {
@@ -965,7 +1111,7 @@ static u16 getFirstLineIdx(txtViewer_t *viewer,s16 skipCnt)
 }
 
 //CONSOLE，AURO模式下使用
-static u16 getFirstLineIdx_autoBreakLine(txtViewer_t *viewer,s16 skipCnt,u8 col_cnt)
+static u16 getFirstLineIdx_AutoBrk(txtViewer_t *viewer,s16 skipCnt,u8 col_cnt)
 {
 	u16 char_idx;
 	u8 col = 0;
@@ -1034,8 +1180,9 @@ static u16 getTotalLine_noAutoBrk(txtViewer_t *viewer)
 	}
 	return line_cnt;
 }
+
 //CONSOLE，AURO模式下使用
-static u16 getTotalLine(txtViewer_t *viewer, u8 col_cnt)
+static u16 getTotalLine_AutoBrk(txtViewer_t *viewer, u8 col_cnt)
 {
 	u8 line_cnt=0;
 	u8 col = 0;
@@ -1092,6 +1239,256 @@ static u16 getTotalLine(txtViewer_t *viewer, u8 col_cnt)
 	}
 	return line_cnt;
 }
+
+#if SUPPORT_DIFFERENT_CHAR_W
+// 重新计算processd_piuxel
+static void Recalculate_processed_pixel(txtViewer_t *viewer)
+{
+	// 获取当前的光标索引值
+	u16 delt_w = 0;
+	int processed_pixel = 0;
+	if(viewer->disp_cb.store_charIdx == viewer->disp_cb.start_charIdx) {
+		viewer->processd_pixel = 0;
+		return;
+	}
+
+	// 去除结束符
+	u16 char_idx = getLast(viewer,viewer->disp_cb.store_charIdx);
+	
+	// 应该先找到开头，然后从最后一行的第一个字符开始向后寻找
+	while( viewer->data_buf[char_idx] != L'\n' ) {
+		if(char_idx == viewer->disp_cb.start_charIdx) {
+			break;
+		}
+		char_idx = getLast(viewer,char_idx);
+	}
+
+	if(viewer->data_buf[char_idx] == L'\n')
+		char_idx = getNext(viewer,char_idx);
+
+	// 开始向后寻找
+	while(viewer->data_buf[char_idx] != L'\0')
+	{
+			//过滤字符
+			if(viewer->filterOut_char) {
+				if(!is_filterChar(viewer->data_buf[char_idx], filter_buf)) {
+					delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+					processed_pixel += delt_w;
+				}
+			} else {
+				delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+				processed_pixel += delt_w;
+			}
+			
+			// 新的一行，等于不算新行
+			if (processed_pixel > viewer->window_w) {
+				processed_pixel = delt_w;
+			}
+
+			char_idx = getNext(viewer, char_idx);
+	}
+
+	viewer->processd_pixel = processed_pixel;
+}
+
+// 获取该行的光标x坐标像素值
+u16 get_cursor_lineX_pixel(txtViewer_t *viewer)
+{
+	// 获取当前的光标索引值
+	u16 delt_w = 0;
+	u16 length_x = 0;
+	u16 cursor_idx = viewer->disp_cb.cursor_idx;
+	//这种情况说明是空
+	if(cursor_idx == viewer->disp_cb.start_charIdx)
+		return length_x;
+	//不统计光标位置
+	cursor_idx = getLast(viewer,cursor_idx);
+	if(cursor_idx == viewer->disp_cb.start_charIdx) {
+		return length_x;
+	}
+	while( viewer->data_buf[cursor_idx] != L'\n' ) {
+		//过滤字符,如果过滤字符就不统计长度
+		if(viewer->filterOut_char) {
+			if(!is_filterChar(viewer->data_buf[cursor_idx],filter_buf)) {
+				delt_w = getCharWidth(viewer, viewer->data_buf[cursor_idx]);
+			}
+		}
+		else {
+			delt_w = getCharWidth(viewer, viewer->data_buf[cursor_idx]);
+		}
+		length_x += delt_w;  // 累加长度
+		if(cursor_idx == viewer->disp_cb.start_charIdx) {
+			break;
+		}
+		cursor_idx = getLast(viewer,cursor_idx);
+	}
+
+	return length_x;
+}
+
+// 根据窗口宽度计算总的行数，为了适应不同字符宽度
+static u16 getTotalLine_AutoBrk_DCW(txtViewer_t *viewer)
+{
+	u16 line_cnt=0;
+	u16 thisLine_pixel = 0;
+	u16 test_pixel = 0;
+	u16 char_idx = viewer->disp_cb.start_charIdx;
+	u16 delt_w = 0;
+	u8 end_line_full = 0;
+	//计算出光标在哪一行
+	if(char_idx == viewer->disp_cb.cursor_idx)
+		viewer->cursor_lineY = line_cnt;
+	//循环cnt次,找到要显示的第一行的第一个位置
+	while(viewer->data_buf[char_idx] != L'\0')
+	{
+		// 计算当前行的结束
+		while( viewer->data_buf[char_idx] != L'\n' && viewer->data_buf[char_idx] != L'\0')
+		{
+			//过滤字符
+			if(viewer->filterOut_char) {
+				if(!is_filterChar(viewer->data_buf[char_idx], filter_buf)) {
+					delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+					thisLine_pixel += delt_w;
+				}
+			} else {
+				delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+				thisLine_pixel += delt_w;
+			}
+			
+			//计算出光标在哪一行
+			if(char_idx == viewer->disp_cb.cursor_idx)
+				viewer->cursor_lineY = line_cnt + thisLine_pixel / viewer->window_w;
+			
+			// 新的一行，等于不算新行
+			if (thisLine_pixel > viewer->window_w) {
+				break;
+			}
+
+			char_idx = getNext(viewer, char_idx);
+		}
+		line_cnt++;
+		// 滤出过滤字符
+		if(viewer->filterOut_char)
+		{
+			while(is_filterChar(viewer->data_buf[char_idx], filter_buf))
+			{	
+				char_idx = getNext(viewer, char_idx); // 找到有效字符
+				//计算出光标在哪一行
+				if(char_idx == viewer->disp_cb.cursor_idx)
+					viewer->cursor_lineY = line_cnt;
+			}
+		}
+
+		test_pixel = thisLine_pixel;
+
+		// 判断当前行是否满
+		if(thisLine_pixel == viewer->window_w){
+			end_line_full = 1;
+		} else {
+			end_line_full = 0;
+		}
+
+		// if (thisLine_pixel > viewer->window_w) 
+		{ // 当前行溢出
+			thisLine_pixel = 0; // 清零当前行的像素值
+		}
+		
+		// 如果是遇到换行导致新行，就进一步判断，这个换行是不是光标位置
+		if(viewer->data_buf[char_idx] == L'\n' || viewer->data_buf[char_idx] == L'\0') { 
+			//计算出光标在哪一行
+			if(char_idx == viewer->disp_cb.cursor_idx)
+				viewer->cursor_lineY = line_cnt;
+			char_idx = getNext(viewer, char_idx);
+		}
+	}
+
+	// wchar_t buffer[10];
+	// swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", test_pixel);
+	// lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,75,buffer,0x0099FF);
+
+	// 防止剩余没有判断
+	if(viewer->data_buf[char_idx] == L'\0') { 
+		//计算出光标在哪一行
+		if(char_idx == viewer->disp_cb.cursor_idx)
+			viewer->cursor_lineY = line_cnt;
+	}
+
+	// 键盘输入模式下如果在末尾检测到有换行，会立即换行操作
+	if(viewer->keyboard_mode && line_cnt != 0 ) {
+		//除去结束符
+		u16 idx = getLast(viewer,viewer->disp_cb.store_charIdx);
+		if(viewer->data_buf[idx] == L'\n') {
+			line_cnt++;
+		}
+		else if(end_line_full) { // 如果当前行满，键盘模式下也进行换行
+			line_cnt++;
+		}
+	}
+
+	return line_cnt;
+}
+
+// 获取第一行的索引值，为了适应不同字符宽度
+static u16 getFirstLineIdx_AutoBrk_DCW(txtViewer_t *viewer,s16 skipCnt,u8 col_cnt)
+{
+	u16 char_idx;
+	u16 line_cnt=0;
+	u16 thisLine_pixel = 0;
+	char_idx = viewer->disp_cb.start_charIdx;
+	
+	if(skipCnt <= 0||char_idx == viewer->disp_cb.store_charIdx)
+		return viewer->disp_cb.start_charIdx;
+	
+	//循环cnt次,找到要显示的第一行的第一个位置
+	while(skipCnt--)
+	{
+		while( viewer->data_buf[char_idx] != L'\n')
+		{
+			//过滤字符
+			if(viewer->filterOut_char) {
+				if(!is_filterChar(viewer->data_buf[char_idx], filter_buf)) {
+					u16 delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+					thisLine_pixel += delt_w;
+				}
+			} else {
+				u16 delt_w = getCharWidth(viewer,viewer->data_buf[char_idx]);
+				thisLine_pixel += delt_w;
+			}
+
+			// 新的一行
+			if (thisLine_pixel > viewer->window_w) {
+				break;
+			}
+			char_idx = getNext(viewer, char_idx);
+		}
+		thisLine_pixel = 0;  // 清零像素数
+		if(viewer->data_buf[char_idx] == L'\n')
+			char_idx = getNext(viewer, char_idx);
+		if(char_idx == viewer->disp_cb.store_charIdx)
+			break;
+	}
+	return char_idx;
+}
+
+#endif  // define SUPPORT_DIFFERENT_CHAR_W
+
+//闪烁光标
+void txtViewer_curosrBlink(txtViewer_t *viewer, s16 txt_x, s16 txt_y, u16 char_idx) {
+	if(viewer->cursor_enable) {
+		static millis8_t lastUpdate;
+		millis8_t now = millis();
+		if ((millis8_t)(now - lastUpdate) >= 1000)
+			lastUpdate = now;
+		if ((millis8_t)(now - lastUpdate) < 500) {
+			
+			if(char_idx == viewer->disp_cb.cursor_idx ) {
+				txtViewer_printCursor(txt_x + viewer->window_x, txt_y + viewer->window_y, 
+						viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
+			}
+		}
+	}
+}
+
 //普通解析模式
 static void txtViewer_display_normal(txtViewer_t *viewer)
 {
@@ -1117,6 +1514,23 @@ static void txtViewer_display_normal(txtViewer_t *viewer)
 	{
 		//x控制
 		s16 length_x = (viewer->cursor_lineX+1) * viewer->char_w;
+		// 根据cursor_lineX计算出统计新的piex
+		// 1.向前统计直到找到换行符号，同时检测英文和中文的宽度
+		// 2.计算出新的piex值替换length_x用于后面的窗口位置计算
+		// 在这里加上对于length_x的进一步处理的函数
+		// 用于处理窗口移动
+		#if SUPPORT_DIFFERENT_CHAR_W
+		do {
+			length_x = get_cursor_lineX_pixel(viewer);
+		} while(0);
+		#endif
+		wchar_t buffer[10];
+		swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", length_x);
+		lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,50,buffer,0x9900FF);
+
+		swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", viewer->processd_pixel);
+		lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,75,buffer,0x0099FF);
+
 		if(length_x - viewer->txt_ofsetX > viewer->window_w) { 
 			if(viewer->scroll_anim)
 				viewer->txt_ofsetX+=Dynamic_Aim_SpeedForWindow(viewer,1,viewer->char_w,length_x - viewer->txt_ofsetX -viewer->window_w);
@@ -1152,6 +1566,17 @@ static void txtViewer_display_normal(txtViewer_t *viewer)
 	else if(viewer->scroll_enable)
 	{
 		s16 length_x = viewer->processd_cnt * viewer->char_w;
+		// 根据processd_cnt计算出统计新的piex
+		// 1.向前统计直到找到换行符号，同时检测英文和中文的宽度
+		// 2.计算出新的piex值替换length_x用于后面的窗口位置计算
+		// 在这里加上对于length_x的进一步处理的函数
+		#if SUPPORT_DIFFERENT_CHAR_W
+		do {
+			length_x = get_cursor_lineX_pixel(viewer);
+		} while(0);
+
+		#endif
+
 		if(length_x - viewer->txt_ofsetX > viewer->window_w) { 
 			if(viewer->scroll_anim)
 				viewer->txt_ofsetX+=Dynamic_Aim_SpeedForWindow(viewer,1,viewer->char_w,length_x - viewer->txt_ofsetX -viewer->window_w);
@@ -1176,34 +1601,39 @@ static void txtViewer_display_normal(txtViewer_t *viewer)
 			viewer->txt_ofsetY = length_y - viewer->window_h;
 	}
 	
-	// wchar_t buff[4];
-	// sprintf_P(buff, PSTR("%d"), viewer->cursor_lineX);
-	// draw_string(buff, NOINVERT, 110, FRAME_HEIGHT - 8);
-	// sprintf_P(buff, PSTR("%d"), viewer->cursor_lineY);
-	// draw_string(buff, NOINVERT, 110, FRAME_HEIGHT - 16);
-	
 	//限制窗口字符行数打印
 	while(row_cnt < line_cnt) {
 		//解析每一个字符搜索换行，否则符合条件打印出来
-		
-		
+
 			s16 txt_x = (col_char_cnt)*viewer->char_w - viewer->txt_ofsetX;
 			s16 txt_y = (row_cnt + (skipLineNum > 0? skipLineNum:0))*viewer->char_h - viewer->txt_ofsetY;
-			//打印光标
-			if(viewer->cursor_enable) {
-				static millis8_t lastUpdate;
-				millis8_t now = millis();
-				if ((millis8_t)(now - lastUpdate) >= 1000)
-					lastUpdate = now;
-				if ((millis8_t)(now - lastUpdate) < 500) {
-					
-					if(char_idx == viewer->disp_cb.cursor_idx ) {
-						txtViewer_printCursor(txt_x + viewer->window_x, txt_y + viewer->window_y, 
-								viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
-					}
-				}
+
+			// 在这里加上对于txt_x的进一步处理的函数
+		#if SUPPORT_DIFFERENT_CHAR_W
+			do {
+				static s16 txt_xx = 0;
+				s16 delt_w = 0; 
 				
-			}
+				// 跳过过滤字符的计算
+				if(is_filterChar(viewer->data_buf[char_idx], filter_buf) && viewer->filterOut_char) {
+					break;
+				}
+				// 获取字符宽度
+				delt_w = getCharWidth(viewer, viewer->data_buf[char_idx]);
+				// 该行的第一个字符
+				if (col_char_cnt == 0) {
+					txt_xx = txt_x + delt_w;
+				} else {
+					txt_xx += delt_w;
+				}
+				// 减去此时的字符长度
+				txt_x = txt_xx - delt_w;
+				
+			} while(0);
+
+		#endif
+			//打印光标,在停止显示之前
+			txtViewer_curosrBlink(viewer, txt_x, txt_y, char_idx);
 			
 			//当显示到达最新的存储字符位置时停止显示
 			if(char_idx ==  viewer->disp_cb.store_charIdx||viewer->data_buf[char_idx] == L'\0')
@@ -1220,25 +1650,30 @@ static void txtViewer_display_normal(txtViewer_t *viewer)
 				col_char_cnt = 0;//遇到新的行列打印计数器清零
 			}
 			else {
-				
+			
+				#if SUPPORT_DIFFERENT_CHAR_W
+				if(txt_x > - viewer->char_w && txt_x < viewer->window_w) {
+
+					txtViewer_printOneChar(txt_x + viewer->window_x, txt_y + viewer->window_y, &viewer->data_buf[char_idx], 
+						viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
+				}
+
+				#else
 				//限制窗口字符打印de列数
 				if(col_char_cnt >= eachLineCharOffsetNum && col_char_cnt < col_cnt + eachLineCharOffsetNum) {
 					
-					if(col_char_cnt*viewer->char_w - viewer->txt_ofsetX > -viewer->char_w
-						&&col_char_cnt*viewer->char_w < viewer->txt_ofsetX + viewer->window_w) {
-						txtViewer_printOneChar(txt_x + viewer->window_x, txt_y + viewer->window_y, &viewer->data_buf[char_idx], 
-							viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
-					}
+					txtViewer_printOneChar(txt_x + viewer->window_x, txt_y + viewer->window_y, &viewer->data_buf[char_idx], 
+						viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
 					
 				}
+				#endif
+					
 				col_char_cnt++;
 			}
-			
+
 			char_idx = getNext(viewer, char_idx);
-			
 	}
 }
-
 
 //自动换行解析模式
 static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
@@ -1247,8 +1682,12 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
 	u16 col_cnt = viewer->window_w/viewer->char_w;
 	//计算需要跳过的行数
 	s16 skipLineNum = viewer->txt_ofsetY/viewer->char_h;
+	#if SUPPORT_DIFFERENT_CHAR_W
 	//获取窗口的第一行的第一个字符比较耗费性能
-	u16 char_idx = getFirstLineIdx_autoBreakLine(viewer,skipLineNum,col_cnt);
+	u16 char_idx = getFirstLineIdx_AutoBrk_DCW(viewer,skipLineNum,col_cnt);
+	#else
+	u16 char_idx = getFirstLineIdx_AutoBrk(viewer,skipLineNum,col_cnt);
+	#endif
 	
 	//计算窗口每列要显示的字符个数
 	u16 line_cnt = viewer->window_h/viewer->char_h+1;
@@ -1256,9 +1695,23 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
 	//行打印计数器//列打印计数器
 	u16 row_cnt = 0, col_char_cnt = 0;
 	
-	u16 total_line = getTotalLine(viewer,col_cnt);
-	//计算出光标的列
-	viewer->cursor_lineX = calculat_CursorCharcnt(viewer);
+	#if SUPPORT_DIFFERENT_CHAR_W
+	u16 total_line = getTotalLine_AutoBrk_DCW(viewer);
+	#else
+	u16 total_line = getTotalLine_AutoBrk(viewer,col_cnt);
+	#endif
+
+	wchar_t buffer[10];
+	swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", total_line);
+	lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,50,buffer,0x9900FF);
+
+	swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", viewer->processd_pixel);
+	lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,75,buffer,0x0099FF);
+
+	// wchar_t buffer[10];
+	swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", viewer->cursor_lineY);
+	lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,100,buffer,0x9900FF);
+	
 	//优先光标跟踪
 	if(viewer->cursor_enable&&viewer->scroll_enable && viewer->keyboard_mode)
 	{
@@ -1304,30 +1757,68 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
 	
 	//限制窗口字符行数打印
 	while(row_cnt < line_cnt) {
-		
-		s16 txt_x;
-		s16 txt_y;
 		//解析每一个字符搜索换行，否则符合条件打印出来
-			
-			//打印光标
+		static s16 txt_x;
+		static s16 txt_y;
+		int new_line_flag = 0;
+
+		
+			#if !SUPPORT_DIFFERENT_CHAR_W
+			//限制窗口字符打印de列数
+			if(col_char_cnt >= col_cnt) {
+				row_cnt++;
+				col_char_cnt = 0;
+				new_line_flag = 1;
+			}
+
 			txt_x = (col_char_cnt)*viewer->char_w;
 			txt_y = (row_cnt + (skipLineNum > 0? skipLineNum:0))*viewer->char_h - viewer->txt_ofsetY;
-			if(viewer->cursor_enable) {
-				static millis8_t lastUpdate;
-				millis8_t now = millis();
-				if ((millis8_t)(now - lastUpdate) >= 1000)
-					lastUpdate = now;
-				if ((millis8_t)(now - lastUpdate) < 500) {
-					
-					if(char_idx == viewer->disp_cb.cursor_idx ) {
-						txtViewer_printCursor(txt_x + viewer->window_x, txt_y + viewer->window_y, 
-								viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
-					}
+			#endif
+			
+			// 在这里加上对于txt_x的进一步处理的函数
+			#if SUPPORT_DIFFERENT_CHAR_W
+			do {
+				static s16 txt_xx = 0;
+				s16 delt_w = 0;
+
+				if (col_char_cnt == 0) {
+					txt_xx = 0;
 				}
+
+				// 获取字符宽度
+				delt_w = getCharWidth(viewer, viewer->data_buf[char_idx]);
+
+				// 自动换行,限制窗口字符打印de列数,如果下一个字符的结尾超过
+				if (txt_xx + delt_w > viewer->window_w ) {
+					row_cnt++;
+					new_line_flag = 1;
+					col_char_cnt = 0;
+					txt_xx = 0;
+				} else {
+					new_line_flag = 0;
+				}
+
+				// txt_x = (col_char_cnt)*viewer->char_w;
+				txt_y = (row_cnt + (skipLineNum > 0? skipLineNum:0))*viewer->char_h - viewer->txt_ofsetY;
 				
-			}
+				// 跳过过滤字符的计算
+				if(is_filterChar(viewer->data_buf[char_idx], filter_buf) && viewer->filterOut_char) {
+					break;
+				}
+
+				txt_xx += delt_w;
+				
+				// 减去此时的字符长度
+				txt_x = txt_xx - delt_w;
+				
+			} while(0);
+			#endif
+
+			//打印光标,在显示停止之前
+			txtViewer_curosrBlink(viewer, txt_x, txt_y, char_idx);
+
 			//当显示到达最新的存储字符位置时停止显示
-			if(char_idx ==  viewer->disp_cb.store_charIdx||viewer->data_buf[char_idx] == L'\0')
+			if(char_idx == viewer->disp_cb.store_charIdx || viewer->data_buf[char_idx] == L'\0')
 				break;
 			
 			//过滤字符
@@ -1336,21 +1827,11 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
 				continue;
 			}
 
-			if(viewer->data_buf[char_idx] == L'\n'){
+			if(viewer->data_buf[char_idx] == L'\n' && !new_line_flag) {
 				row_cnt++;
 				col_char_cnt = 0;//遇到新的行列打印计数器清零
-			}
-			else {
-				//限制窗口字符打印de列数
-				if(col_char_cnt >= col_cnt) {
-					row_cnt++;
-					col_char_cnt = 0;
-				}
-					
-				 txt_x = (col_char_cnt)*viewer->char_w;
-				 txt_y = (row_cnt + (skipLineNum > 0? skipLineNum:0))*viewer->char_h - viewer->txt_ofsetY;
-				
-				
+			} else {
+
 				txtViewer_printOneChar(txt_x + viewer->window_x, txt_y + viewer->window_y, &viewer->data_buf[char_idx], 
 							viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
 				
@@ -1358,25 +1839,32 @@ static void txtViewer_display_autoBreakLine(txtViewer_t *viewer)
 			}
 			
 			char_idx = getNext(viewer, char_idx);
-				
-			
 	}
 }
 
-//终端输出解析模式 console print mode
+// 终端输出解析模式 console print mode
 static void txtViewer_console_print(txtViewer_t *viewer)
 {
 	//计算窗口每行要显示的字符个数
 	u16 col_cnt = viewer->window_w/viewer->char_w;
 	//计算当前的总行数比较耗费性能
-	u8 total_line = getTotalLine(viewer, col_cnt);
-	//计算窗口每列要显示的字符个数//9
-	u16 line_cnt = viewer->window_h/viewer->char_h+1;
+	#if SUPPORT_DIFFERENT_CHAR_W
+	u16 total_line = getTotalLine_AutoBrk_DCW(viewer);
+	#else
+	u16 total_line = getTotalLine_AutoBrk(viewer,col_cnt);
+	#endif
+	//计算窗口需要显示的行数， 补1
+	u16 line_cnt = viewer->window_h/viewer->char_h + 1;
 	//历史行最小为一行，因为在形成一行字符瞬间，整体向下偏移一个字符高度，如果不显示一行历史行就会有空洞存在
 	u16 history_line = viewer->scroll_pixel/viewer->char_h + 1;
 	s16 skipLineNum = total_line - line_cnt + 1 - history_line;
-	//获取窗口的第一行的第一个字符
-	u16 char_idx = getFirstLineIdx_autoBreakLine(viewer, skipLineNum, col_cnt);
+
+	// 根据跳过的行数计算开始显示的字符位置
+	#if SUPPORT_DIFFERENT_CHAR_W
+	u16 char_idx = getFirstLineIdx_AutoBrk_DCW(viewer,skipLineNum,col_cnt);
+	#else
+	u16 char_idx = getFirstLineIdx_AutoBrk(viewer,skipLineNum,col_cnt);
+	#endif
 	
 	//行打印计数器//列打印计数器
 	u16 row_cnt = 0, col_char_cnt = 0;
@@ -1393,56 +1881,81 @@ static void txtViewer_console_print(txtViewer_t *viewer)
 		skipLineNum = 0;
 	}
 	
-	
 	if(viewer->scroll_anim) {
 		if(viewer->scroll_enable)
 			if(viewer->scroll_pixel > 0)
 				viewer->scroll_pixel -= txtViewer_Dynamic_Aim_Speed(viewer, 1);
 	} else {
-		static s16 last_scroll_pixel;
-		if(viewer->scroll_pixel != last_scroll_pixel) {
-			last_scroll_pixel = viewer->scroll_pixel;
-			// freetype_clean_screen();
-		}
-		
 		if(viewer->scroll_enable)
 			viewer->scroll_pixel = 0;
 	}
 	
-	
-	
-	
-	// wchar_t buff[4];
-	// sprintf_P(buff, PSTR("%d"), total_line);
-	// draw_string(buff, NOINVERT, 110, FRAME_HEIGHT - 8);
-	// sprintf_P(buff, PSTR("%d"), viewer->processd_cnt);
-	// draw_string(buff, NOINVERT, 110, FRAME_HEIGHT - 16);
+	wchar_t buffer[10];
+	swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%d", viewer->processd_pixel);
+	lcd_draw_character_cache(txtViewer.window_x + txtViewer.window_w,75,buffer,0x0099FF);
 	
 	//限制窗口字符行数打印
 	//显示数等于窗口行高度+2行
 	while(row_cnt < line_cnt+1) {
 		s16 txt_x;
 		s16 txt_y;
+		u8 new_line_flag = 0;
 		
-			//打印光标
-			txt_x = (col_char_cnt)*viewer->char_w;
-			txt_y = (row_cnt - history_line)*viewer->char_h + viewer->scroll_pixel + (skipLineNum == -1 ? viewer->char_h:0);
-			if(viewer->cursor_enable) {
-				static millis8_t lastUpdate;
-				millis8_t now = millis();
-				if ((millis8_t)(now - lastUpdate) >= 1000)
-					lastUpdate = now;
-				if ((millis8_t)(now - lastUpdate) < 500) {
-					
-					if(char_idx == viewer->disp_cb.cursor_idx ) {
-						txtViewer_printCursor(txt_x + viewer->window_x, txt_y + viewer->window_y, 
-								viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
-					}
-				}
-				
+			#if !SUPPORT_DIFFERENT_CHAR_W
+			//限制窗口字符打印de列数
+			if(col_char_cnt >= col_cnt) {
+				row_cnt++;
+				col_char_cnt = 0;
 			}
+			txt_x = (col_char_cnt)*viewer->char_w;
+			//skipLineNum == -1 是一种特殊情况，此时历史行找不到了，变成正常的第一行了，就造成最大偏移时第一行显示的是第二行，负一行显示的是第一行应该弥补
+			txt_y = (row_cnt - history_line)*viewer->char_h + viewer->scroll_pixel + (skipLineNum == -1 ? viewer->char_h:0);
+			
+			#endif
+			
+			// 在这里加上对于txt_x的进一步处理的函数
+			#if SUPPORT_DIFFERENT_CHAR_W
+			do {
+				static s16 txt_xx = 0;
+				s16 delt_w = 0;
+
+				if (col_char_cnt == 0) {
+					txt_xx = 0;
+				}
+
+				// 获取字符宽度
+				delt_w = getCharWidth(viewer, viewer->data_buf[char_idx]);
+
+				// 自动换行,限制窗口字符打印de列数,如果下一个字符的结尾超过
+				if (txt_xx + delt_w > viewer->window_w ) {
+					row_cnt++;
+					new_line_flag = 1;
+					col_char_cnt = 0;
+					txt_xx = 0;
+				} else {
+					new_line_flag = 0;
+				}
+
+				txt_y = (row_cnt - history_line)*viewer->char_h + viewer->scroll_pixel + (skipLineNum == -1 ? viewer->char_h:0);
+				
+				// 跳过过滤字符的计算
+				if(is_filterChar(viewer->data_buf[char_idx], filter_buf) && viewer->filterOut_char) {
+					break;
+				}
+
+				txt_xx += delt_w;
+				
+				// 减去此时的字符长度
+				txt_x = txt_xx - delt_w;
+				
+			} while(0);
+			#endif
+
+			//打印光标,在显示停止之前
+			txtViewer_curosrBlink(viewer, txt_x, txt_y, char_idx);
+
 			//当显示到达最新的存储字符位置时停止显示
-			if(char_idx ==  viewer->disp_cb.store_charIdx||viewer->data_buf[char_idx] == L'\0')
+			if(char_idx ==  viewer->disp_cb.store_charIdx || viewer->data_buf[char_idx] == L'\0')
 				break;
 			
 			//过滤字符
@@ -1450,22 +1963,13 @@ static void txtViewer_console_print(txtViewer_t *viewer)
 				char_idx = getNext(viewer, char_idx);
 				continue;
 			}
-				
+			
 			//解析每一个字符搜索换行，否则符合条件打印出来
-			if(viewer->data_buf[char_idx] == L'\n'){
+			if(viewer->data_buf[char_idx] == L'\n' && !new_line_flag){
 				row_cnt++;
 				col_char_cnt = 0;//遇到新的行列打印计数器清零
 			}
 			else {
-				//限制窗口字符打印de列数
-				if(col_char_cnt >= col_cnt) {
-					row_cnt++;
-					col_char_cnt = 0;
-				}
-				txt_x = (col_char_cnt)*viewer->char_w;
-				//skipLineNum == -1 是一种特殊情况，此时历史行找不到了，变成正常的第一行了，就造成最大偏移时第一行显示的是第二行，负一行显示的是第一行应该弥补
-				txt_y = (row_cnt - history_line)*viewer->char_h + viewer->scroll_pixel + (skipLineNum == -1 ? viewer->char_h:0);
-				
 				
 				txtViewer_printOneChar(txt_x + viewer->window_x, txt_y + viewer->window_y, &viewer->data_buf[char_idx], 
 							viewer->window_x,viewer->window_y, viewer->window_y + viewer->window_h, viewer->window_x + viewer->window_w);
@@ -1493,7 +1997,10 @@ void txtViewer_drawBoundary(txtViewer_t *viewer)
 
 
 
-
+#define T_KEY_UP  (1)
+#define T_KEY_DOWN (2)
+#define T_KEY_LEFT  (3)
+#define T_KEY_RIGHT  (4)
 
 static wchar_t * operator_buf = L"\b";
 static u8 is_operator(txtViewer_t *viewer)
@@ -1504,6 +2011,8 @@ static u8 is_operator(txtViewer_t *viewer)
 		if(viewer->getchar == *opt_buf++)
 			return true;
 	}
+	if (viewer->getchar == T_KEY_UP || viewer->getchar == T_KEY_DOWN || viewer->getchar == T_KEY_LEFT  || viewer->getchar == T_KEY_RIGHT)
+		return true;
 	return false;
 }
 
@@ -1511,14 +2020,18 @@ static u8 is_operator(txtViewer_t *viewer)
 void txtViewer_do_operator(txtViewer_t *viewer)
 {
 	//退格
-	if(viewer->getchar == L'-') {
-		if(viewer->keyboard_mode) {
+	if(viewer->getchar == L'\b') {
+		// if (viewer->process_mode == CONSOLE_PRINT) {
+		// 	txtViewer_DeleteLastStoreChar(viewer);
+		// } else {
 			txtViewer_CursorDeleteChar(viewer);
-		}
-		else {
-			//在结尾处删除字符
-			viewer->disp_cb.cursor_idx = viewer->disp_cb.store_charIdx;
-			txtViewer_CursorDeleteChar(viewer);
+		// }
+	} else {
+		switch (viewer->getchar) {
+			case T_KEY_LEFT:  cursor_left(viewer);  break;
+			case T_KEY_RIGHT: cursor_right(viewer); break;
+			case T_KEY_UP:    cursor_up(viewer);    break;
+			case T_KEY_DOWN:  cursor_down(viewer);  break;
 		}
 	}
 }
@@ -1532,13 +2045,18 @@ static void txtViewer_run(txtViewer_t *viewer)
 			txtViewer_do_operator(viewer);
 		} else {
 			//使能光标，光标处增加字符
-			if(viewer->cursor_enable)
-				txtViewer_CursorAddChar(viewer,viewer->getchar);
-			//否者在结尾处增加字符
-			else
+			if(viewer->cursor_enable) {
+				
+				if (viewer->process_mode == CONSOLE_PRINT) {
+					txtViewer_printf(viewer, L"%lc",viewer->getchar);
+				} else {
+					txtViewer_CursorAddChar(viewer,viewer->getchar);
+				}
+				
+			} else { //否者在结尾处增加字符
 				txtViewer_printf(viewer, L"%c",viewer->getchar);
+			}	
 		}
-		
 	}
 	viewer->process(viewer);
 	if(viewer->win_boundary) {
@@ -1810,34 +2328,4 @@ void cursor_add()
 	txt_test_open();
 }
 
-
-// static void itemLoader(byte num)
-// {
-// 	num = 0;
-// 	setMenuOption_P(num++, PSTR("up down"), NULL, up_down);
-// 	setMenuOption_P(num++, PSTR("left right"), NULL, left_right);
-// 	setMenuOption_P(num++, PSTR("win up down"), NULL, win_upDown);
-// 	setMenuOption_P(num++, PSTR("win left right"), NULL, win_leftRight);
-// 	setMenuOption_P(num++, PSTR("filt lr"), NULL, flter_lr);
-// 	setMenuOption_P(num++, PSTR("kbd md"), NULL, kbd_mode);
-// 	setMenuOption_P(num++, PSTR("win 48x64"), NULL, size48x64);
-// 	setMenuOption_P(num++, PSTR("win 32x64"), NULL, size32x64);
-// 	setMenuOption_P(num++, PSTR("win 48x96"), NULL, size48x96);
-// 	setMenuOption_P(num++, PSTR("win full"), NULL, sizefull);
-// 	setMenuOption_P(num++, PSTR("clear"), NULL, clear_buf);
-// 	setMenuOption_P(num++, PSTR("normal"), NULL, normal);
-// 	setMenuOption_P(num++, PSTR("nor_print"), NULL, normal_print);
-// 	setMenuOption_P(num++, PSTR("autobrk"), NULL, autobrk);
-// 	setMenuOption_P(num++, PSTR("aut_print"), NULL, autobrk_print);
-// 	setMenuOption_P(num++, PSTR("csl_print"), NULL, p_test);
-// 	setMenuOption_P(num++, PSTR("csl_println"), NULL, p_testln);
-// 	setMenuOption_P(num++, PSTR("anim"), NULL, scroll_anim);
-// 	setMenuOption_P(num++, PSTR("curUD"), NULL, cursor_updown);
-// 	setMenuOption_P(num++, PSTR("curLR"), NULL, cursor_LR);
-// 	setMenuOption_P(num++, PSTR("curadd"), NULL, cursor_add);
-// 	setMenuOption_P(num++, PSTR("CMD"), NULL, cmdtest);
-// 	setMenuOption_P(num++, PSTR("CMDw"), NULL, cmdtest2);
-// 	setMenuOption_P(num++, PSTR("ps_kill"), NULL, cmdtest3);
-// 	setMenuOption_P(num++, PSTR("back"), NULL, backto);
-// }
 

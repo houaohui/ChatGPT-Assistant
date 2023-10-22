@@ -4,6 +4,10 @@
 #ifndef _TXT_VIEWER_H_
 #define _TXT_VIEWER_H_
 
+// 支持英文和中文不同宽度
+#define SUPPORT_DIFFERENT_CHAR_W  1
+#define SUPPORT_TABLE_WIDTH       0
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -43,8 +47,10 @@ struct txtViewer{
 	u8 cursor_enable;
 	u8 scroll_anim;
 	u8 scroll_enable;
-	//用于形成行动画，记录每行处理过的字符个数
+	// 用于形成行动画，记录每行处理过的字符个数
 	u16 processd_cnt;
+	// 同processd_cnt类似，用于记录处理过的字符的像素值，为了适应不同字体的宽度不同
+	int processd_pixel;
 	//光标的坐标
 	u16 cursor_lineY;
 	u16 cursor_lineX;
@@ -74,7 +80,7 @@ void txt_test_open(void);
 
 void txtViewer_init(txtViewer_t *viewer, int size, s16 win_x, s16 win_y, p_mode_t p_mode);
 void txtViewer_getChar(txtViewer_t *viewer, wchar_t data);
-void txtViewer_setWindow(txtViewer_t *viewer, u8 w, u8 h );
+void txtViewer_setWindow(txtViewer_t *viewer, s16 h, s16 w);
 //切换字符源
 void txtViewer_changeSource(txtViewer_t *viewer, txtViewer_t *new_source);
 //切换解析器
